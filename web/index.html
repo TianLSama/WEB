@@ -1,0 +1,674 @@
+<!--© 2026 TianLSama. All rights reserved.-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta name="msvalidate.01" content="4F6D9D618C3AC81E93BA8336DFFD932B" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1">
+    <title>主页 | TianCLoud</title>
+    <style>
+        :root {
+            --primary: #6EC3F7;
+            --text: rgba(255,255,255,0.9);
+            --anim-duration: 0.6s;
+            --cloudflare-orange: #F38020;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffb6c1 0%, #87cefa 100%);
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            position: relative;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-bar {
+            background: transparent;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100vw;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            padding-left: 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-decoration: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .cloudflare-text {
+            color: var(--cloudflare-orange);
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            padding-right: 30px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #f0f0f0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .main-content {
+            padding: 12vmin 4vmin 6rem;
+            padding-top: 80px;
+        }
+
+        .content-section {
+            display: flex;
+            gap: 4vmin;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 0 0 4vmin;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp var(--anim-duration) ease-out forwards;
+            animation-delay: 0.6s;
+        }
+
+        .content-section img {
+            max-width: 40%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            height: auto;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: itemAppear 0.5s ease-out forwards;
+            animation-delay: 0.9s;
+        }
+
+        .text-content {
+            flex: 1;
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 1.1em;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: itemAppear 0.5s ease-out forwards;
+            animation-delay: 1.2s;
+        }
+
+        .footer-bar {
+            background: #fff;
+            width: 100%;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+            color: #666;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* 音频播放器样式 */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+        }
+
+        .music-player:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .music-player.playing {
+            animation: rotate 3s linear infinite;
+        }
+
+        .music-icon-container {
+            position: relative;
+            z-index: 2;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-player-icon {
+            font-size: 24px;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .music-player.playing .music-player-icon {
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .player-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 999;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .player-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+            display: block;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .player-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .song-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .song-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .song-artist {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .progress-container {
+            background: #eee;
+            border-radius: 5px;
+            height: 6px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+        }
+
+        .play-btn:hover {
+            background: #5ab0e5;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .playlist {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .playlist-item {
+            padding: 8px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s ease;
+        }
+
+        .playlist-item:hover {
+            background: #f5f5f5;
+        }
+
+        .playlist-item.active {
+            background: #e6f7ff;
+            color: var(--primary);
+        }
+
+        .playlist-item-title {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .playlist-item-artist {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes itemAppear {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(110, 195, 247, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(110, 195, 247, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(110, 195, 247, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15vmin 3vmin 6rem;
+                padding-top: 80px;
+            }
+            .content-section {
+                flex-direction: column;
+                margin-left: 3vmin;
+            }
+            .content-section img {
+                max-width: 100%;
+            }
+            .logo {
+                padding-left: 15px;
+                font-size: 1.1rem;
+            }
+            .nav-link {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <a href="https://www.tianlsama.cn" class="logo">
+            TianCLoud | www.tianlsama.cn [IPv4+IPv6 Supported By <span class="cloudflare-text">Cloudflare</span>]
+        </a>
+        <div class="nav-links">
+            <a href="https://blog.tianlsama.org.cn" class="nav-link">博客</a>
+            <a href="工具箱.html" class="nav-link">工具箱</a>
+            <a href="相关链接.html" class="nav-link">相关链接</a>
+            <a href="友链.html" class="nav-link">友链</a>
+            <a href="其他.html" class="nav-link">其他</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <div class="content-section">
+            <img src="https://file.tianlsama.0a0b.cn/d/storage/Private%20Cloud/image-bed/Image_1747555244905.jpg">
+            <div class="text-content">
+                <h1>设定 (OC/形象)</h1>
+                <p>【角色名称】<br>恬 (Tian/TianLSama)</p>
+                <p>【国籍】<br>中华人民共和国</p>
+                <p>【民族】<br>汉族</p>
+                <p>【生日】<br>8月29日</p>
+                <p>【年龄】<br>女孩子的年龄是绝密哦❤️<br>🎵🎵再一次谈到自己的年龄，前缀是「我才」还是「我已经」....🎵🎵</p>
+                <p>【性别】<br>绪山真寻 (女孩子?男孩子?! <s>(男の娘)</s> )</p>
+                <p>【标签】<br>PIKASONIC，KAMITSUBAKI STUDIO，V.W.P，Mafumafu，Nachoneko，Neuro_sama，とある科学の超電磁砲，Minecraft，ADOFAI，Forza Horizon 4，Forza Horizon 5，Phigros，Phira</p>
+                <p>【特色】<br>特色♡  <s>魅魔❤️</s></p>
+            </div>
+        </div>
+        <br><br><br>
+        <div class="content-section">
+            <img src="https://file.tianlsama.0a0b.cn/d/storage/Private%20Cloud/image-bed/1747555813296.jpg">
+            <div class="text-content">
+                <h1>设定 (OC/形象)-幼年版</h1>
+                <p>(其实在小时候就已经成为女孩子了哦)</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bar">© 2026 TianCLoud. All rights reserved.
+    </div>
+
+    <!-- 音频播放器 -->
+    <div class="music-player" id="musicPlayer">
+        <div class="music-icon-container">
+            <div class="music-player-icon" id="playerIcon">🎵</div>
+        </div>
+    </div>
+
+    <div class="player-panel" id="playerPanel">
+        <div class="player-header">
+            <div class="player-title">音乐</div>
+            <button class="close-btn" id="closePlayer">×</button>
+        </div>
+        
+        <div class="song-info">
+            <div class="song-title" id="currentTitle">选择一首歌曲</div>
+            <div class="song-artist" id="currentArtist"></div>
+        </div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="prevBtn">⏮</button>
+            <button class="control-btn play-btn" id="playBtn">▶</button>
+            <button class="control-btn" id="nextBtn">⏭</button>
+        </div>
+        
+        <div class="volume-container">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+        </div>
+        
+        <div class="playlist" id="playlist">
+            <!-- 播放列表项将通过JavaScript动态添加 -->
+        </div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        // 音频播放器功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const musicPlayer = document.getElementById('musicPlayer');
+            const playerPanel = document.getElementById('playerPanel');
+            const playerIcon = document.getElementById('playerIcon');
+            const closePlayer = document.getElementById('closePlayer');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playBtn = document.getElementById('playBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            const currentTitle = document.getElementById('currentTitle');
+            const currentArtist = document.getElementById('currentArtist');
+            const playlist = document.getElementById('playlist');
+            const volumeSlider = document.getElementById('volumeSlider');
+
+            // 播放列表数据
+            const songs = [
+                {
+                    title: "女の子になりたい",
+                    artist: "まふまふ - Mafumafu",
+                    url: "https://file.tianlsama.0a0b.cn/d/storage/Private%20Cloud/image-bed/%E5%A5%B3%E3%81%AE%E5%AD%90%E3%81%AB%E3%81%AA%E3%82%8A%E3%81%9F%E3%81%84.mp3"
+                }
+            ];
+
+            let currentSongIndex = 0;
+            let isPlaying = false;
+
+            // 初始化播放列表
+            function initPlaylist() {
+                playlist.innerHTML = '';
+                songs.forEach((song, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'playlist-item';
+                    if (index === currentSongIndex) {
+                        item.classList.add('active');
+                    }
+                    item.innerHTML = `
+                        <div class="playlist-item-title">${song.title}</div>
+                        <div class="playlist-item-artist">${song.artist}</div>
+                    `;
+                    item.addEventListener('click', () => playSong(index));
+                    playlist.appendChild(item);
+                });
+            }
+
+            // 播放指定索引的歌曲
+            function playSong(index) {
+                currentSongIndex = index;
+                const song = songs[currentSongIndex];
+                
+                audioPlayer.src = song.url;
+                currentTitle.textContent = song.title;
+                currentArtist.textContent = song.artist;
+                
+                audioPlayer.play();
+                isPlaying = true;
+                updatePlayButton();
+                updatePlaylistActive();
+                musicPlayer.classList.add('playing');
+            }
+
+            // 更新播放按钮图标
+            function updatePlayButton() {
+                if (isPlaying) {
+                    playBtn.innerHTML = '⏸';
+                } else {
+                    playBtn.innerHTML = '▶';
+                }
+            }
+
+            // 更新播放列表激活状态
+            function updatePlaylistActive() {
+                const items = playlist.querySelectorAll('.playlist-item');
+                items.forEach((item, index) => {
+                    if (index === currentSongIndex) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // 切换播放面板显示
+            musicPlayer.addEventListener('click', () => {
+                playerPanel.classList.toggle('active');
+            });
+
+            // 关闭播放面板
+            closePlayer.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playerPanel.classList.remove('active');
+            });
+
+            // 播放/暂停按钮
+            playBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audioPlayer.pause();
+                    isPlaying = false;
+                    musicPlayer.classList.remove('playing');
+                } else {
+                    if (audioPlayer.src) {
+                        audioPlayer.play();
+                        isPlaying = true;
+                        musicPlayer.classList.add('playing');
+                    } else {
+                        playSong(currentSongIndex);
+                    }
+                }
+                updatePlayButton();
+            });
+
+            // 上一首
+            prevBtn.addEventListener('click', () => {
+                currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+                playSong(currentSongIndex);
+            });
+
+            // 下一首
+            nextBtn.addEventListener('click', () => {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                playSong(currentSongIndex);
+            });
+
+            // 进度条点击
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                audioPlayer.currentTime = pos * audioPlayer.duration;
+            });
+
+            // 音频时间更新
+            audioPlayer.addEventListener('timeupdate', () => {
+                const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+
+            });
+
+            // 音频播放结束
+            audioPlayer.addEventListener('ended', () => {
+                nextBtn.click();
+            });
+
+            // 音频加载错误处理
+            audioPlayer.addEventListener('error', () => {
+                currentTitle.textContent = '音频加载失败';
+                currentArtist.textContent = '请检查网络连接或音频链接';
+                isPlaying = false;
+                updatePlayButton();
+                musicPlayer.classList.remove('playing');
+            });
+
+            // 音量控制
+            volumeSlider.addEventListener('input', () => {
+                audioPlayer.volume = volumeSlider.value;
+            });
+
+            // 初始化
+            initPlaylist();
+            updatePlayButton();
+        });
+    </script>
+</body>
+</html>
