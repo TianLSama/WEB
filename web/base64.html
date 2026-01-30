@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64转换工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        select, button {
+            margin: 5px;
+            padding: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9e9e9;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Base64转换工具</h1>
+        
+        <div>
+            <label for="encoding">选择编码:</label>
+            <select id="encoding">
+                <option value="utf-8">UTF-8</option>
+                <option value="utf-16le">UTF-16LE</option>
+                <option value="utf-16be">UTF-16BE</option>
+                <option value="gbk">GBK</option>
+                <option value="big5">Big5</option>
+                <option value="shift-jis">Shift-JIS</option>
+                <option value="gb18030">GB18030 (中日韩)</option>
+            </select>
+        </div>
+        
+        <div>
+            <textarea id="inputText" placeholder="请输入要转换的文本"></textarea>
+        </div>
+        
+        <div>
+            <button onclick="encodeToBase64()">编码为Base64</button>
+            <button onclick="decodeFromBase64()">从Base64解码</button>
+            <button onclick="clearAll()">清空</button>
+        </div>
+        
+        <div class="result">
+            <h3>结果:</h3>
+            <textarea id="outputText" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        function encodeToBase64() {
+            const input = document.getElementById('inputText').value;
+            const encoding = document.getElementById('encoding').value;
+            
+            try {
+                let encoded;
+                switch(encoding) {
+                    case 'utf-8':
+                        encoded = btoa(unescape(encodeURIComponent(input)));
+                        break;
+                    case 'utf-16le':
+                        encoded = base64EncodeUTF16LE(input);
+                        break;
+                    case 'utf-16be':
+                        encoded = base64EncodeUTF16BE(input);
+                        break;
+                    case 'gbk':
+                        encoded = base64EncodeGBK(input);
+                        break;
+                    case 'big5':
+                        encoded = base64EncodeBig5(input);
+                        break;
+                    case 'shift-jis':
+                        encoded = base64EncodeShiftJIS(input);
+                        break;
+                    case 'gb18030':
+                        encoded = base64EncodeGB18030(input);
+                        break;
+                    default:
+                        encoded = btoa(unescape(encodeURIComponent(input)));
+                }
+                document.getElementById('outputText').value = encoded;
+            } catch (error) {
+                document.getElementById('outputText').value = '编码错误: ' + error.message;
+            }
+        }
+
+        function decodeFromBase64() {
+            const input = document.getElementById('inputText').value;
+            const encoding = document.getElementById('encoding').value;
+            
+            try {
+                let decoded;
+                switch(encoding) {
+                    case 'utf-8':
+                        decoded = decodeURIComponent(escape(atob(input)));
+                        break;
+                    case 'utf-16le':
+                        decoded = base64DecodeUTF16LE(input);
+                        break;
+                    case 'utf-16be':
+                        decoded = base64DecodeUTF16BE(input);
+                        break;
+                    case 'gbk':
+                        decoded = base64DecodeGBK(input);
+                        break;
+                    case 'big5':
+                        decoded = base64DecodeBig5(input);
+                        break;
+                    case 'shift-jis':
+                        decoded = base64DecodeShiftJIS(input);
+                        break;
+                    case 'gb18030':
+                        decoded = base64DecodeGB18030(input);
+                        break;
+                    default:
+                        decoded = decodeURIComponent(escape(atob(input)));
+                }
+                document.getElementById('outputText').value = decoded;
+            } catch (error) {
+                document.getElementById('outputText').value = '解码错误: ' + error.message;
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+        }
+
+        // 简化的GBK编码函数（实际应用中建议使用专门的库）
+        function base64EncodeGBK(str) {
+            // 这里只是一个简化示例，实际的GBK编码会更复杂
+            return btoa(str.split('').map(c => c.charCodeAt(0)).map(b => String.fromCharCode(b > 127 ? b - 128 : b)).join(''));
+        }
+
+        function base64DecodeGBK(str) {
+            // 简化的GBK解码函数
+            return atob(str).split('').map(c => c.charCodeAt(0)).map(b => String.fromCharCode(b < 128 ? b + 128 : b)).join('');
+        }
+
+        // Big5编码函数（简化版）
+        function base64EncodeBig5(str) {
+            // 简化实现，实际应使用专业库
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function base64DecodeBig5(str) {
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        // Shift-JIS编码函数（简化版）
+        function base64EncodeShiftJIS(str) {
+            // 简化实现，实际应使用专业库
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function base64DecodeShiftJIS(str) {
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        // 新增 UTF-16LE 编码函数
+        function base64EncodeUTF16LE(str) {
+            const encoder = new TextEncoder('utf-16le');
+            const bytes = encoder.encode(str);
+            return btoa(String.fromCharCode(...bytes));
+        }
+
+        function base64DecodeUTF16LE(str) {
+            const binary = atob(str);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const decoder = new TextDecoder('utf-16le');
+            return decoder.decode(bytes);
+        }
+
+        // 新增 UTF-16BE 编码函数
+        function base64EncodeUTF16BE(str) {
+            const encoder = new TextEncoder('utf-16be');
+            const bytes = encoder.encode(str);
+            return btoa(String.fromCharCode(...bytes));
+        }
+
+        function base64DecodeUTF16BE(str) {
+            const binary = atob(str);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const decoder = new TextDecoder('utf-16be');
+            return decoder.decode(bytes);
+        }
+
+        // 新增 GB18030 编码函数
+        function base64EncodeGB18030(str) {
+            try {
+                const encoder = new TextEncoder('gb18030');
+                const bytes = encoder.encode(str);
+                return btoa(String.fromCharCode(...bytes));
+            } catch (e) {
+                // 如果浏览器不支持 gb18030，则降级为 utf-8
+                console.warn("GB18030 not supported, falling back to UTF-8");
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+        }
+
+        function base64DecodeGB18030(str) {
+            try {
+                const binary = atob(str);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                const decoder = new TextDecoder('gb18030');
+                return decoder.decode(bytes);
+            } catch (e) {
+                console.warn("GB18030 not supported, falling back to UTF-8");
+                return decodeURIComponent(escape(atob(str)));
+            }
+        }
+    </script>
+</body>
+</html>
