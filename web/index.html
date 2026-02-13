@@ -466,7 +466,6 @@
     <div class="footer-bar">© 2026 TianCLoud. All rights reserved.
     </div>
 
-    <!-- 音频播放器 -->
     <div class="music-player" id="musicPlayer">
         <div class="music-icon-container">
             <div class="music-player-icon" id="playerIcon">🎵</div>
@@ -500,14 +499,12 @@
         </div>
         
         <div class="playlist" id="playlist">
-            <!-- 播放列表项将通过JavaScript动态添加 -->
         </div>
     </div>
 
     <audio id="audioPlayer"></audio>
 
     <script>
-        // 音频播放器功能
         document.addEventListener('DOMContentLoaded', function() {
             const musicPlayer = document.getElementById('musicPlayer');
             const playerPanel = document.getElementById('playerPanel');
@@ -524,7 +521,6 @@
             const playlist = document.getElementById('playlist');
             const volumeSlider = document.getElementById('volumeSlider');
 
-            // 播放列表数据
             const songs = [
                 {
                     title: "女の子になりたい",
@@ -536,7 +532,6 @@
             let currentSongIndex = 0;
             let isPlaying = false;
 
-            // 初始化播放列表
             function initPlaylist() {
                 playlist.innerHTML = '';
                 songs.forEach((song, index) => {
@@ -554,7 +549,6 @@
                 });
             }
 
-            // 播放指定索引的歌曲
             function playSong(index) {
                 currentSongIndex = index;
                 const song = songs[currentSongIndex];
@@ -570,7 +564,6 @@
                 musicPlayer.classList.add('playing');
             }
 
-            // 更新播放按钮图标
             function updatePlayButton() {
                 if (isPlaying) {
                     playBtn.innerHTML = '⏸';
@@ -579,7 +572,6 @@
                 }
             }
 
-            // 更新播放列表激活状态
             function updatePlaylistActive() {
                 const items = playlist.querySelectorAll('.playlist-item');
                 items.forEach((item, index) => {
@@ -591,18 +583,15 @@
                 });
             }
 
-            // 切换播放面板显示
             musicPlayer.addEventListener('click', () => {
                 playerPanel.classList.toggle('active');
             });
 
-            // 关闭播放面板
             closePlayer.addEventListener('click', (e) => {
                 e.stopPropagation();
                 playerPanel.classList.remove('active');
             });
 
-            // 播放/暂停按钮
             playBtn.addEventListener('click', () => {
                 if (isPlaying) {
                     audioPlayer.pause();
@@ -620,38 +609,32 @@
                 updatePlayButton();
             });
 
-            // 上一首
             prevBtn.addEventListener('click', () => {
                 currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
                 playSong(currentSongIndex);
             });
 
-            // 下一首
             nextBtn.addEventListener('click', () => {
                 currentSongIndex = (currentSongIndex + 1) % songs.length;
                 playSong(currentSongIndex);
             });
 
-            // 进度条点击
             progressContainer.addEventListener('click', (e) => {
                 const rect = progressContainer.getBoundingClientRect();
                 const pos = (e.clientX - rect.left) / rect.width;
                 audioPlayer.currentTime = pos * audioPlayer.duration;
             });
 
-            // 音频时间更新
             audioPlayer.addEventListener('timeupdate', () => {
                 const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
                 progressBar.style.width = `${percent}%`;
 
             });
 
-            // 音频播放结束
             audioPlayer.addEventListener('ended', () => {
                 nextBtn.click();
             });
 
-            // 音频加载错误处理
             audioPlayer.addEventListener('error', () => {
                 currentTitle.textContent = '音频加载失败';
                 currentArtist.textContent = '请检查网络连接或音频链接';
@@ -660,12 +643,10 @@
                 musicPlayer.classList.remove('playing');
             });
 
-            // 音量控制
             volumeSlider.addEventListener('input', () => {
                 audioPlayer.volume = volumeSlider.value;
             });
 
-            // 初始化
             initPlaylist();
             updatePlayButton();
         });

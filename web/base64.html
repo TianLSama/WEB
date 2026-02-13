@@ -146,20 +146,15 @@
             document.getElementById('outputText').value = '';
         }
 
-        // 简化的GBK编码函数（实际应用中建议使用专门的库）
         function base64EncodeGBK(str) {
-            // 这里只是一个简化示例，实际的GBK编码会更复杂
             return btoa(str.split('').map(c => c.charCodeAt(0)).map(b => String.fromCharCode(b > 127 ? b - 128 : b)).join(''));
         }
 
         function base64DecodeGBK(str) {
-            // 简化的GBK解码函数
             return atob(str).split('').map(c => c.charCodeAt(0)).map(b => String.fromCharCode(b < 128 ? b + 128 : b)).join('');
         }
 
-        // Big5编码函数（简化版）
         function base64EncodeBig5(str) {
-            // 简化实现，实际应使用专业库
             return btoa(unescape(encodeURIComponent(str)));
         }
 
@@ -167,9 +162,7 @@
             return decodeURIComponent(escape(atob(str)));
         }
 
-        // Shift-JIS编码函数（简化版）
         function base64EncodeShiftJIS(str) {
-            // 简化实现，实际应使用专业库
             return btoa(unescape(encodeURIComponent(str)));
         }
 
@@ -177,7 +170,6 @@
             return decodeURIComponent(escape(atob(str)));
         }
 
-        // 新增 UTF-16LE 编码函数
         function base64EncodeUTF16LE(str) {
             const encoder = new TextEncoder('utf-16le');
             const bytes = encoder.encode(str);
@@ -194,7 +186,6 @@
             return decoder.decode(bytes);
         }
 
-        // 新增 UTF-16BE 编码函数
         function base64EncodeUTF16BE(str) {
             const encoder = new TextEncoder('utf-16be');
             const bytes = encoder.encode(str);
@@ -211,14 +202,12 @@
             return decoder.decode(bytes);
         }
 
-        // 新增 GB18030 编码函数
         function base64EncodeGB18030(str) {
             try {
                 const encoder = new TextEncoder('gb18030');
                 const bytes = encoder.encode(str);
                 return btoa(String.fromCharCode(...bytes));
             } catch (e) {
-                // 如果浏览器不支持 gb18030，则降级为 utf-8
                 console.warn("GB18030 not supported, falling back to UTF-8");
                 return btoa(unescape(encodeURIComponent(str)));
             }

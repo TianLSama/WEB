@@ -10,6 +10,7 @@
             --primary: #6EC3F7;
             --text: rgba(255,255,255,0.9);
             --anim-duration: 0.6s;
+            --anim-delay-step: 0.05s; 
             --cloudflare-orange: #F38020;
         }
 
@@ -19,7 +20,7 @@
             background: linear-gradient(135deg, #ffb6c1 0%, #87cefa 100%);
             font-family: 'Arial Rounded MT Bold', sans-serif;
             position: relative;
-            padding: 80px 30px 100px; /* 增加底部内边距 */
+            padding: 80px 30px 100px;
             overflow-x: hidden;
         }
 
@@ -49,6 +50,9 @@
             position: relative;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp var(--anim-duration) ease-out forwards;
         }
 
         .link-box:hover {
@@ -153,67 +157,82 @@
     <div class="links-container">
         <div class="link-row">
             <div class="link-box">
-                <a href="https://space.bilibili.com/3493259009591847" class="link-title" style="animation-delay: 0.1s">B站</a>
+                <a href="https://space.bilibili.com/3493259009591847" class="link-title">B站</a>
                 <p class="link-description">某科学のTianLSama_w</p>
             </div>
             <div class="link-box">
-                <a href="https://github.com/TianLSama" class="link-title" style="animation-delay: 0.2s">GitHub</a>
+                <a href="https://github.com/TianLSama" class="link-title">GitHub</a>
                 <p class="link-description">github.com/TianLSama</p>
             </div>
         </div>
 
         <div class="link-row">
             <div class="link-box">
-                <a href="https://qm.qq.com/q/Z6UVPZxkMG" class="link-title" style="animation-delay: 0.3s">QQ群聊</a>
+                <a href="https://qm.qq.com/q/Z6UVPZxkMG" class="link-title">QQ群聊</a>
                 <p class="link-description">机器售后，红石交流群，有任何问题可以进群咨询 <s>(并非售后，小楠梁交流群)</s></p>
             </div>
             <div class="link-box">
-                <a href="https://file.tianlsama.org.cn" class="link-title" style="animation-delay: 0.4s">文件分发服务</a>
+                <a href="https://file.tianlsama.org.cn" class="link-title">文件分发服务</a>
                 <p class="link-description">MC机器存档，投影文件下载</p>
             </div>
         </div>
         
         <div class="link-row">
             <div class="link-box">
-                <a href="https://kuma.tianlsama.dpdns.org" class="link-title" style="animation-delay: 0.5s">服务可用性监测</a>
+                <a href="https://kuma.tianlsama.dpdns.org" class="link-title">服务可用性监测</a>
                 <p class="link-description">由  Uptime Kuma  提供技术支持</p>
             </div>
             <div class="link-box">
-                <a href="https://stats.uptimerobot.com/muQCtNylYq" class="link-title" style="animation-delay: 0.6s">服务可用性监测</a>
+                <a href="https://stats.uptimerobot.com/muQCtNylYq" class="link-title">服务可用性监测</a>
                 <p class="link-description">由  UptimeRobot  提供技术支持</p>
             </div>
         </div>
         
         <div class="link-row">
             <div class="link-box">
-                <a href="https://cloudflare.com" class="link-title" style="animation-delay: 0.7s">域名解析服务</a>
+                <a href="https://cloudflare.com" class="link-title">域名解析服务</a>
                 <p class="link-description">该网站由  Cloudflare  提供免费域名解析服务</p>
             </div>
             <div class="link-box">
-                <a href="https://uptimerobot.com/" class="link-title" style="animation-delay: 0.8s">状态监测服务</a>
+                <a href="https://uptimerobot.com/" class="link-title">状态监测服务</a>
                 <p class="link-description">UptimeRobot</p>
             </div>
         </div>
         
         <div class="link-row">
             <div class="link-box">
-                <a href="https://domain.digitalplat.org/" class="link-title" style="animation-delay: 0.9s">.dpdns.org免费顶级域名</a>
+                <a href="https://domain.digitalplat.org/" class="link-title">.dpdns.org免费顶级域名</a>
                 <p class="link-description">DigitalPlat</p>
             </div>
             <div class="link-box">
-                <a href="https://www.kirari-neko.cn" class="link-title" style="animation-delay: 1.0s">kirari-neko.cn | Kirari✨星璃</a>
+                <a href="https://www.kirari-neko.cn" class="link-title">kirari-neko.cn | Kirari✨星璃</a>
                 <p class="link-description">友链<br>www.kirari-neko.cn</p>
             </div>
         </div>
         
         <div class="link-row">
             <div class="link-box">
-                <a href="https://x.com/TianLSama" class="link-title" style="animation-delay: 1.1s">X</a>
+                <a href="https://x.com/TianLSama" class="link-title">X</a>
                 <p class="link-description">@TianLSama</p>
             </div>
         </div>
     </div>
 
     <div class="footer-bar">© 2026 TianCLoud. All rights reserved.</div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const linkBoxes = document.querySelectorAll('.link-box');
+            
+            linkBoxes.forEach((box, index) => {
+                const delay = (index + 1) * 0.05 + 's';
+                box.style.animationDelay = delay;
+                const linkTitle = box.querySelector('.link-title');
+                if (linkTitle) {
+                    linkTitle.style.animationDelay = delay;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
