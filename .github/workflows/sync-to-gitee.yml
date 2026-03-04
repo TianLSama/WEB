@@ -2,8 +2,8 @@ name: Sync to Gitee
 
 on:
   push:
-    branches: [main, master] # 监听哪些分支的推送，通常包括 main 或 master
-  workflow_dispatch: # 允许手动触发
+    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # 获取所有历史记录，确保标签和分支完整
+          fetch-depth: 0
 
       - name: Set up Git user
         run: |
@@ -30,7 +30,5 @@ jobs:
         env:
           GITEE_REPO: git@gitee.com:${{ secrets.GITEE_USERNAME }}/${{ github.event.repository.name }}.git
         run: |
-          # 如果 Gitee 上还没有该仓库，需要先手动在 Gitee 创建一个空仓库（名字要和 GitHub 一致）
-          # 强制推送以确保完全同步（慎用，如果 Gitee 有独立提交可能会丢失，但在镜像场景下通常是预期的）
           git push --force $GITEE_REPO --all
           git push --force $GITEE_REPO --tags
