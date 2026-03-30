@@ -1,7 +1,7 @@
 <!--© 2026 TianLSama. All rights reserved.-->
 <!DOCTYPE html>
 <html lang="zh-CN">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1200, user-scalable=yes">
 <head>
     <meta name="msvalidate.01" content="4F6D9D618C3AC81E93BA8336DFFD932B" />
     <meta charset="UTF-8">
@@ -38,9 +38,14 @@
 
         html, body {
             width: 100%;
-            overflow-x: hidden;
             margin: 0;
             padding: 0;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-bar {
