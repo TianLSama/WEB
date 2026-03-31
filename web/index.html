@@ -36,16 +36,18 @@
             animation: fadeIn 0.8s ease-out forwards;
         }
 
-        html, body {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            -ms-overflow-style: none;
+        html {
+            overflow-y: scroll;
+        }
+        html::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        html {
             scrollbar-width: none;
         }
-
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-            display: none;
+        html {
+            -ms-overflow-style: none;
         }
 
         .nav-bar {
