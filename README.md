@@ -1,7 +1,5 @@
-### 本项目使用分层授权模式：
+### 声明：
 
-网站代码使用 MIT License 协议。  
-原创内容 (含 虚拟形象 设定 文章 等等原创内容) 使用 CC BY-NC-ND 4.0 协议。  
-许可证详情见：  
-LICENSE/MIT/LICENSE.md  
-LICENSE/CC BY-NC-ND 4.0/LICENSE.md
+本项目中  
+网站源代码遵循 [MIT 许可证](LICENSE)。  
+文档和艺术资产 (含 虚拟形象 设定 文章 等等原创内容) 遵循 [CC BY-NC-ND 4.0 许可证](COPYING)。
