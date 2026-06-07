@@ -2,36 +2,79 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>张雪峰模拟器</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
-    background: #1a1a2e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: #000;
+    width: 100vw;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
-    font-family: 'Courier New', monospace;
+    font-family: "Microsoft YaHei","微软雅黑",sans-serif;
     user-select: none;
+    touch-action: manipulation;
 }
 #game-container {
-    position: relative;
-    border: 4px solid #333;
-    border-radius: 4px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    position: fixed;
+    inset: 0;
 }
 canvas {
     display: block;
+    position: absolute;
+    top: 0; left: 0;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    border: none;
+}
+/* 触屏按钮（全客户端可见） */
+#touch-controls {
+    position: fixed;
+    bottom: 10px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 10;
+    pointer-events: none;
+}
+#touch-controls button {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    background: rgba(0,0,0,0.45);
+    color: rgba(255,255,255,0.85);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    transition: background 0.1s;
+}
+#touch-controls button:active {
+    background: rgba(255,255,255,0.25);
+}
+#btn-rest {
+    font-size: 12px;
+    font-weight: bold;
 }
 </style>
 </head>
 <body>
 <div id="game-container">
     <canvas id="game"></canvas>
+</div>
+<div id="touch-controls">
+    <button id="btn-enter" title="进入">开始</button>
+    <button id="btn-duck"  title="低头">▼</button>
+    <button id="btn-jump" title="跳跃">▲</button>
+    <button id="btn-rest" title="休息">休息</button>
 </div>
 <script>
 // ============================================================
@@ -46,6 +89,19 @@ const W = 800;
 const H = 300;
 canvas.width = W;
 canvas.height = H;
+
+// ---- 全屏缩放（拉伸填充，无黑边）----
+function resizeCanvas() {
+    canvas.style.width  = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ---- 字体辅助（统一微软雅黑）----
+function fontCN(size, bold) {
+    return (bold ? 'bold ' : '') + size + 'px "Microsoft YaHei","微软雅黑",sans-serif';
+}
 
 // ---- 常量配置 ----
 const GROUND_Y = 240;          // 地面线 Y
@@ -328,9 +384,9 @@ const mountainSprite = makeSprite(60, 40, (cx, w, h) => {
 // ============================================================
 //  游戏状态
 // ============================================================
-const STATE = { START: 'start', PLAYING: 'playing', RESTING: 'resting', GAMEOVER: 'gameover' };
+const STATE = { DISCLAIMER: 'disclaimer', START: 'start', PLAYING: 'playing', RESTING: 'resting', GAMEOVER: 'gameover' };
 
-let gameState = STATE.START;
+let gameState = STATE.DISCLAIMER;
 let score = 0;
 let highScore = parseInt(localStorage.getItem('zxf_high') || '0');
 
@@ -403,6 +459,28 @@ function updateInput() {
     // 克隆当前状态
     for (const k in keys) prevKeys[k] = keys[k];
 }
+
+// ---- 移动端触屏按钮 ----
+const btnEnter = document.getElementById('btn-enter');
+const btnJump = document.getElementById('btn-jump');
+const btnDuck = document.getElementById('btn-duck');
+const btnRest = document.getElementById('btn-rest');
+
+btnEnter.addEventListener('pointerdown', e => { e.preventDefault(); keys['Enter'] = true; });
+btnEnter.addEventListener('pointerup',   e => { e.preventDefault(); keys['Enter'] = false; });
+btnEnter.addEventListener('pointerleave', e => { keys['Enter'] = false; });
+
+btnJump.addEventListener('pointerdown', e => { e.preventDefault(); keys[' '] = true; keys['Space'] = true; keys['ArrowUp'] = true; });
+btnJump.addEventListener('pointerup',   e => { e.preventDefault(); keys[' '] = false; keys['Space'] = false; keys['ArrowUp'] = false; });
+btnJump.addEventListener('pointerleave', e => { keys[' '] = false; keys['Space'] = false; keys['ArrowUp'] = false; });
+
+btnDuck.addEventListener('pointerdown', e => { e.preventDefault(); keys['Shift'] = true; keys['ShiftLeft'] = true; keys['ShiftRight'] = true; });
+btnDuck.addEventListener('pointerup',   e => { e.preventDefault(); keys['Shift'] = false; keys['ShiftLeft'] = false; keys['ShiftRight'] = false; });
+btnDuck.addEventListener('pointerleave', e => { keys['Shift'] = false; keys['ShiftLeft'] = false; keys['ShiftRight'] = false; });
+
+btnRest.addEventListener('pointerdown', e => { e.preventDefault(); keys['s'] = true; keys['S'] = true; keys['KeyS'] = true; });
+btnRest.addEventListener('pointerup',   e => { e.preventDefault(); keys['s'] = false; keys['S'] = false; keys['KeyS'] = false; });
+btnRest.addEventListener('pointerleave', e => { keys['s'] = false; keys['S'] = false; keys['KeyS'] = false; });
 
 // ============================================================
 //  游戏函数
@@ -516,9 +594,17 @@ function update(dt) {
 
     updateInput();
 
+    if (gameState === STATE.DISCLAIMER) {
+        // 按Enter进入开始页
+        if (keyJustPressed['Enter']) {
+            gameState = STATE.START;
+        }
+        return;
+    }
+
     if (gameState === STATE.START) {
-        // 按空格开始
-        if (keyJustPressed[' '] || keyJustPressed['Space'] || keyJustPressed['ArrowUp']) {
+        // 按空格/Enter开始
+        if (keyJustPressed[' '] || keyJustPressed['Space'] || keyJustPressed['ArrowUp'] || keyJustPressed['Enter']) {
             resetGame();
         }
         return;
@@ -533,8 +619,8 @@ function update(dt) {
             p.life -= norm;
         }
         particles = particles.filter(p => p.life > 0);
-        // 按空格重新开始
-        if (keyJustPressed[' '] || keyJustPressed['Space'] || keyJustPressed['ArrowUp']) {
+        // 按空格/Enter重新开始
+        if (keyJustPressed[' '] || keyJustPressed['Space'] || keyJustPressed['ArrowUp'] || keyJustPressed['Enter']) {
             resetGame();
         }
         return;
@@ -830,7 +916,7 @@ function render() {
 
     // 危险值文字
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 10px "Courier New", monospace';
+    ctx.font = fontCN(10, true);
     ctx.textAlign = 'left';
     ctx.fillText('危险值', barX + 2, barY + 11);
 
@@ -838,7 +924,7 @@ function render() {
     if (danger >= DANGER_WARN) {
         const warnAlpha = 0.5 + 0.5 * Math.sin(Date.now() * 0.01);
         ctx.fillStyle = `rgba(255, 50, 50, ${warnAlpha})`;
-        ctx.font = 'bold 11px "Courier New", monospace';
+        ctx.font = fontCN(11, true);
         ctx.textAlign = 'left';
         ctx.fillText('⚠ 警告！', barX + barW + 8, barY + 11);
     }
@@ -858,7 +944,7 @@ function render() {
         ctx.fillRect(cdX, cdY, 130, 10);
     }
     ctx.fillStyle = '#fff';
-    ctx.font = '9px "Courier New", monospace';
+    ctx.font = fontCN(9, false);
     ctx.textAlign = 'left';
     ctx.fillText(restCooldownRemain > 0 ? `休息冷却 ${Math.ceil(restCooldownRemain / 1000)}s` : '休息就绪 [S]', cdX + 2, cdY + 9);
 
@@ -874,28 +960,97 @@ function render() {
         ctx.fillStyle = '#f39c12';
         ctx.fillRect(restX, restY, restBarW * restProgress, 14);
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 11px "Courier New", monospace';
+        ctx.font = fontCN(11, true);
         ctx.textAlign = 'center';
         ctx.fillText(`休息中... ${Math.ceil(restTimer / 1000)}s`, W / 2, restY + 11);
     }
 
     // 分数
     ctx.fillStyle = '#333';
-    ctx.font = 'bold 13px "Courier New", monospace';
+    ctx.font = fontCN(13, true);
     ctx.textAlign = 'right';
     ctx.fillText(`距离: ${Math.floor(score)}m`, W - 14, barY + 11);
 
     // 操作提示
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '9px "Courier New", monospace';
+    ctx.font = fontCN(9, false);
     ctx.textAlign = 'right';
     ctx.fillText('[空格]跳跃 [Shift]低头 [S]休息', W - 14, cdY + 9);
 
     // 最高分
     if (highScore > 0) {
         ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = fontCN(10, false);
         ctx.textAlign = 'right';
         ctx.fillText(`最高: ${Math.floor(highScore)}m`, W - 14, cdY + 22);
+    }
+
+    // ---- 声明页面 ----
+    if (gameState === STATE.DISCLAIMER) {
+        ctx.fillStyle = 'rgba(0,0,0,0.85)';
+        ctx.fillRect(0, 0, W, H);
+
+        // 标题
+        ctx.fillStyle = '#f1c40f';
+        ctx.font = fontCN(18, true);
+        ctx.textAlign = 'center';
+        ctx.fillText('张雪峰模拟器', W / 2, 32);
+
+        // 尊重逝者
+        ctx.fillStyle = '#ecf0f1';
+        ctx.font = fontCN(12, true);
+        ctx.fillText('适度玩梗，尊重逝者，逝者安息。', W / 2, 56);
+
+        // 分隔线
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(140, 66);
+        ctx.lineTo(W - 140, 66);
+        ctx.stroke();
+
+        // 科普标题
+        ctx.fillStyle = '#e74c3c';
+        ctx.font = fontCN(11, true);
+        ctx.fillText('▎关于心源性猝死', W / 2, 82);
+
+        // 科普内容
+        ctx.fillStyle = '#bdc3c7';
+        ctx.font = fontCN(10, false);
+        ctx.textAlign = 'left';
+        const infoX = 120;
+        const lines = [
+            '◆ 心源性猝死是指由心脏原因导致的突然、意外死亡，',
+            '   通常在症状出现后1小时内发生。',
+            '',
+            '◆ 常见预警症状：',
+            '   胸痛胸闷 · 心悸心慌 · 呼吸困难 · 头晕乏力 · 眼前发黑',
+            '',
+            '◆ 主要诱因：',
+            '   过度劳累 · 剧烈运动 · 情绪激动 · 大量烟酒 · 长期熬夜',
+            '',
+            '◆ 高危人群：',
+            '   冠心病/心肌病患者 · 有猝死家族史者 · 三高人群',
+            '',
+            '◆ 预防措施：',
+            '   定期体检  ·  控制三高  ·  戒烟限酒',
+            '   避免过度劳累  ·  规律作息  ·  学习CPR',
+        ];
+        let lineY = 98;
+        for (const line of lines) {
+            if (line === '') { lineY += 8; continue; }
+            ctx.fillText(line, infoX, lineY);
+            lineY += 13;
+        }
+
+        // 底部提示 - 居中闪烁
+        ctx.textAlign = 'center';
+        const blink = Math.sin(Date.now() * 0.005) > 0;
+        if (blink) {
+            ctx.fillStyle = '#fff';
+            ctx.font = fontCN(13, true);
+            ctx.fillText('按 Enter 进入游戏', W / 2, H - 16);
+        }
     }
 
     // ---- 开始画面 ----
@@ -905,13 +1060,13 @@ function render() {
 
         // 标题
         ctx.fillStyle = '#f1c40f';
-        ctx.font = 'bold 28px "Courier New", monospace';
+        ctx.font = fontCN(28, true);
         ctx.textAlign = 'center';
         ctx.fillText('张雪峰模拟器', W / 2, H / 2 - 50);
 
         // 副标题
         ctx.fillStyle = '#ecf0f1';
-        ctx.font = '13px "Courier New", monospace';
+        ctx.font = fontCN(13, false);
         ctx.fillText('像素风跑酷小游戏', W / 2, H / 2 - 22);
 
         // 玩家展示
@@ -923,14 +1078,14 @@ function render() {
 
         // 道具标签
         ctx.fillStyle = '#2ecc71';
-        ctx.font = 'bold 10px "Courier New", monospace';
+        ctx.font = fontCN(10, true);
         ctx.fillText('雪碧', W / 2 - 90 + OBST_W * SPRITE_SCALE / 2, GROUND_Y + 16);
         ctx.fillStyle = '#d4a574';
         ctx.fillText('巧乐兹', W / 2 + 60 + OBST_W * SPRITE_SCALE / 2, GROUND_Y + 16);
 
         // 操作说明
         ctx.fillStyle = '#bdc3c7';
-        ctx.font = '11px "Courier New", monospace';
+        ctx.font = fontCN(11, false);
         const instY = H / 2 + 55;
         ctx.fillText('[空格] 跳跃躲避  |  [Shift] 低头躲避  |  [S] 休息恢复', W / 2, instY);
 
@@ -938,8 +1093,8 @@ function render() {
         const blink = Math.sin(Date.now() * 0.005) > 0;
         if (blink) {
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 16px "Courier New", monospace';
-            ctx.fillText('按空格键开始游戏', W / 2, instY + 35);
+            ctx.font = fontCN(16, true);
+            ctx.fillText('按空格或Enter开始游戏', W / 2, instY + 35);
         }
     }
 
@@ -956,29 +1111,29 @@ function render() {
         }
 
         ctx.fillStyle = '#e74c3c';
-        ctx.font = 'bold 24px "Courier New", monospace';
+        ctx.font = fontCN(24, true);
         ctx.textAlign = 'center';
         ctx.fillText('心源性猝死！', W / 2, H / 2 - 35);
 
         ctx.fillStyle = '#ecf0f1';
-        ctx.font = '14px "Courier New", monospace';
+        ctx.font = fontCN(14, false);
         ctx.fillText(`奔跑距离: ${Math.floor(score)}m`, W / 2, H / 2 + 5);
 
         if (score >= highScore && score > 0) {
             ctx.fillStyle = '#f1c40f';
-            ctx.font = 'bold 13px "Courier New", monospace';
+            ctx.font = fontCN(13, true);
             ctx.fillText('🏆 新纪录！', W / 2, H / 2 + 25);
         } else {
             ctx.fillStyle = '#95a5a6';
-            ctx.font = '12px "Courier New", monospace';
+            ctx.font = fontCN(12, false);
             ctx.fillText(`最高记录: ${Math.floor(highScore)}m`, W / 2, H / 2 + 25);
         }
 
-        const blink = Math.sin(Date.now() * 0.005) > 0;
-        if (blink) {
+        const blink2 = Math.sin(Date.now() * 0.005) > 0;
+        if (blink2) {
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 14px "Courier New", monospace';
-            ctx.fillText('按空格键重新开始', W / 2, H / 2 + 55);
+            ctx.font = fontCN(14, true);
+            ctx.fillText('按空格或Enter重新开始', W / 2, H / 2 + 55);
         }
     }
 }
